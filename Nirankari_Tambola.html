@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nirankari Tambola — Youth Night</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Bebas+Neue&family=Crimson+Text:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --gold:        #FFD700;
+  --gold-bright: #FFF176;
+  --gold-deep:   #FF8C00;
+  --gold-dark:   #A05800;
+  --white:       #FFFFFF;
+  --bg:          #03030E;
+  --header-h:    170px;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--white);
+  overflow-x: hidden;
+  font-family: 'Crimson Text', serif;
+}
+
+/* ─── STARS ──────────────────────────────────────────── */
+#stars-bg {
+  position: fixed; inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: twinkle var(--dur) var(--delay) infinite alternate ease-in-out;
+}
+@keyframes twinkle {
+  0%   { opacity: var(--lo); transform: scale(0.75); }
+  100% { opacity: var(--hi); transform: scale(1.3); }
+}
+
+/* ─── FIXED HEADER ───────────────────────────────────── */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 1000;
+  text-align: center;
+  padding: 14px 20px 18px;
+  background: linear-gradient(
+    to bottom,
+    rgba(3,3,14,1) 0%,
+    rgba(3,3,14,0.96) 75%,
+    rgba(3,3,14,0) 100%
+  );
+}
+
+.header-sub {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700;
+  font-size: clamp(0.75rem, 2vw, 1.2rem);
+  color: var(--white);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 12px rgba(255,215,0,0.8),
+    0 0 24px rgba(255,215,0,0.4);
+  margin-bottom: 4px;
+}
+
+.header-main {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900;
+  font-size: clamp(1.8rem, 5.5vw, 4.2rem);
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-shadow:
+    0 0 12px rgba(255,215,0,0.95),
+    0 0 28px rgba(255,215,0,0.65),
+    0 0 60px rgba(255,140,0,0.4),
+    3px  3px 0  rgba(120,60,0,0.85),
+    6px  6px 0  rgba(80,30,0,0.45),
+   -1px -1px 0  rgba(255,255,180,0.25);
+}
+
+.header-deco {
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  margin-top: 8px;
+}
+.header-deco-line {
+  flex: 1; max-width: 220px; height: 1.5px;
+  background: linear-gradient(to right, transparent, rgba(255,215,0,0.65), transparent);
+}
+.header-deco-star {
+  font-size: 1.1rem; color: var(--gold);
+  text-shadow: 0 0 10px rgba(255,215,0,0.9);
+}
+
+/* ─── APP SHELL ──────────────────────────────────────── */
+#app {
+  position: relative; z-index: 10;
+  padding-top: var(--header-h);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding-bottom: 50px;
+  gap: 0;
+}
+
+/* ─── VIEW 1 : WHEEL ─────────────────────────────────── */
+#view-wheel {
+  display: flex; flex-direction: column;
+  align-items: center;
+  gap: 26px;
+  width: 100%;
+}
+
+.wheel-outer {
+  position: relative;
+  padding-bottom: 48px;
+}
+
+#wheelCanvas {
+  display: block;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 32px rgba(255,200,0,0.45))
+          drop-shadow(0 0 70px rgba(255,140,0,0.2));
+  will-change: transform;
+}
+
+.wheel-pointer {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left:  18px solid transparent;
+  border-right: 18px solid transparent;
+  border-bottom: 38px solid #FF3030;
+  filter: drop-shadow(0 0 12px rgba(255,48,48,0.9))
+          drop-shadow(0 0 6px  rgba(255,140,0,0.6));
+  z-index: 5;
+}
+
+.remaining-label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  color: var(--gold);
+  letter-spacing: 0.25em;
+  text-shadow: 0 0 12px rgba(255,215,0,0.5);
+  opacity: 0.85;
+}
+
+.spin-btn {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  letter-spacing: 0.22em;
+  color: #0A0A20;
+  background: linear-gradient(135deg, #FFF176 0%, #FFD700 40%, #FF8C00 100%);
+  border: none;
+  padding: clamp(12px, 2vw, 18px) clamp(40px, 8vw, 80px);
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow:
+    0 0 18px rgba(255,215,0,0.65),
+    0 0 45px rgba(255,140,0,0.35),
+    inset 0 1px 0  rgba(255,255,200,0.6),
+    inset 0 -2px 4px rgba(160,80,0,0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.spin-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
+  pointer-events: none;
+}
+.spin-btn:not(:disabled):hover {
+  transform: scale(1.055);
+  box-shadow:
+    0 0 30px rgba(255,215,0,0.85),
+    0 0 70px rgba(255,140,0,0.5);
+}
+.spin-btn:not(:disabled):active { transform: scale(0.96); }
+.spin-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ─── VIEW 2 : QUESTION CARD ─────────────────────────── */
+#view-question {
+  display: none; flex-direction: column;
+  align-items: center;
+  width: 92%; max-width: 820px;
+  text-align: center;
+  gap: clamp(8px, 1.5vw, 14px); 
+}
+
+.q-label, .q-number {
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease, text-shadow 0.8s ease;
+}
+
+#view-question.focus-number .q-label {
+  transform: scale(1.4) translateY(-15px);
+  opacity: 0.9;
+}
+
+#view-question.focus-number .q-number {
+  transform: scale(1.5) translateY(10px);
+  text-shadow:
+    0 0 30px rgba(255,215,0,1),
+    0 0 80px rgba(255,150,0,0.8),
+    0 0 120px rgba(255,255,255,0.3);
+}
+
+#questionRevealWrapper {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  width: 100%;
+}
+
+#view-question.focus-number #questionRevealWrapper {
+  grid-template-rows: 0fr;
+}
+
+#questionRevealArea {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(12px, 2.5vw, 22px);
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.8s ease 0.2s, transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+#view-question.focus-number #questionRevealArea {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.2s, transform 0.2s; 
+}
+
+.q-label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(0.7rem, 1.6vw, 1rem);
+  color: var(--gold);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.q-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 15vw, 8rem);
+  color: var(--gold);
+  line-height: 1;
+  text-shadow:
+    0 0 18px rgba(255,215,0,0.95),
+    0 0 40px rgba(255,150,0,0.65),
+    4px  4px 0 rgba(120,60,0,0.85),
+    8px  8px 0 rgba(80,30,0,0.4);
+}
+
+.gold-divider {
+  width: 70%; max-width: 480px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255,215,0,0.55), transparent);
+}
+
+.q-text {
+  font-family: 'Crimson Text', serif;
+  font-size: clamp(1.2rem, 2.8vw, 2rem);
+  color: var(--white);
+  line-height: 1.55;
+  max-width: 680px;
+  text-shadow: 0 0 18px rgba(255,255,255,0.25);
+  margin-top: 8px;
+}
+
+/* BIG TIMER */
+.timer-wrap {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+}
+.timer-sub {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(0.6rem, 1.4vw, 0.85rem);
+  letter-spacing: 0.35em;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+}
+.timer-display {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(5.5rem, 22vw, 11rem);
+  color: var(--white);
+  line-height: 1;
+  text-shadow:
+    0 0 20px rgba(255,255,255,0.9),
+    0 0 50px rgba(200,220,255,0.4);
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+.timer-display.urgent {
+  color: #FF3333;
+  text-shadow:
+    0 0 18px rgba(255,50,50,0.95),
+    0 0 40px rgba(255,50,50,0.7),
+    0 0 80px rgba(255,50,50,0.35);
+  animation: urgentPulse 0.45s infinite alternate;
+}
+@keyframes urgentPulse {
+  from { transform: scale(1); }
+  to   { transform: scale(1.06); }
+}
+
+/* ANSWER */
+.answer-text {
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: clamp(1.4rem, 3.2vw, 2.3rem);
+  color: var(--gold-bright);
+  line-height: 1.4;
+  text-shadow:
+    0 0 14px rgba(255,241,118,0.85),
+    0 0 32px rgba(255,215,0,0.45);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+  padding: 0 20px;
+}
+.answer-text.hidden {
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* CONTROL BUTTONS */
+.controls {
+  display: flex; flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.ctrl-btn {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+  letter-spacing: 0.14em;
+  padding: clamp(10px, 1.5vw, 14px) clamp(20px, 4vw, 34px);
+  border: 2px solid rgba(255,215,0,0.75);
+  border-radius: 4px;
+  background: rgba(255,215,0,0.06);
+  color: var(--gold);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-shadow: 0 0 8px rgba(255,215,0,0.45);
+  box-shadow: 0 0 12px rgba(255,215,0,0.12);
+}
+.ctrl-btn:hover {
+  background: rgba(255,215,0,0.18);
+  box-shadow: 0 0 22px rgba(255,215,0,0.38), inset 0 0 14px rgba(255,215,0,0.08);
+  transform: translateY(-2px);
+}
+.ctrl-btn:active { transform: translateY(0); }
+.ctrl-btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
+.ctrl-btn.accent {
+  background: rgba(255,215,0,0.2);
+  border-color: var(--gold);
+}
+.ctrl-btn.paused {
+  background: rgba(255,100,0,0.18);
+  border-color: #FF8C00;
+  color: #FF8C00;
+  text-shadow: 0 0 8px rgba(255,140,0,0.6);
+}
+
+/* GAME-OVER BANNER */
+.all-done-msg {
+  display: none;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.4rem, 4vw, 2.8rem);
+  color: var(--gold);
+  text-align: center;
+  text-shadow:
+    0 0 20px rgba(255,215,0,0.8),
+    0 0 50px rgba(255,215,0,0.4);
+  padding: 30px 20px;
+  line-height: 1.6;
+}
+
+/* ─── VIEW 3 : REVIEW ─────────────────────────────────── */
+#view-review {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 92%; max-width: 820px;
+  text-align: center;
+  gap: clamp(14px, 2.5vw, 24px);
+  animation: fadeInUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.review-label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(0.65rem, 1.5vw, 0.9rem);
+  color: var(--gold);
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.review-counter {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  color: rgba(255,215,0,0.55);
+  letter-spacing: 0.2em;
+}
+
+.review-number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.5rem, 12vw, 6rem);
+  color: var(--gold);
+  line-height: 1;
+  text-shadow:
+    0 0 18px rgba(255,215,0,0.95),
+    0 0 40px rgba(255,150,0,0.65),
+    4px 4px 0 rgba(120,60,0,0.85),
+    8px 8px 0 rgba(80,30,0,0.4);
+}
+
+.review-card {
+  width: 100%;
+  background: rgba(255,215,0,0.04);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 8px;
+  padding: clamp(20px, 4vw, 36px) clamp(18px, 4vw, 40px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2.5vw, 22px);
+  box-shadow: 0 0 40px rgba(255,215,0,0.06), inset 0 0 30px rgba(255,215,0,0.02);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.review-card.transitioning {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.review-q {
+  font-family: 'Crimson Text', serif;
+  font-size: clamp(1.15rem, 2.6vw, 1.85rem);
+  color: var(--white);
+  line-height: 1.55;
+  text-shadow: 0 0 18px rgba(255,255,255,0.2);
+}
+
+.review-divider {
+  width: 60%;
+  height: 1px;
+  margin: 0 auto;
+  background: linear-gradient(to right, transparent, rgba(255,215,0,0.45), transparent);
+}
+
+.review-a-label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(0.55rem, 1.2vw, 0.75rem);
+  letter-spacing: 0.4em;
+  color: rgba(255,215,0,0.55);
+  text-transform: uppercase;
+}
+
+.review-a {
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: clamp(1.3rem, 3vw, 2.1rem);
+  color: var(--gold-bright);
+  line-height: 1.4;
+  text-shadow:
+    0 0 14px rgba(255,241,118,0.85),
+    0 0 32px rgba(255,215,0,0.45);
+}
+
+.review-controls {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Review button — gold filled for Next */
+.review-btn-next {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  letter-spacing: 0.18em;
+  color: #0A0A20;
+  background: linear-gradient(135deg, #FFF176 0%, #FFD700 40%, #FF8C00 100%);
+  border: none;
+  padding: clamp(10px, 1.8vw, 16px) clamp(32px, 6vw, 60px);
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow:
+    0 0 18px rgba(255,215,0,0.5),
+    0 0 40px rgba(255,140,0,0.25),
+    inset 0 1px 0 rgba(255,255,200,0.6);
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.review-btn-next::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
+  pointer-events: none;
+}
+.review-btn-next:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 28px rgba(255,215,0,0.75), 0 0 60px rgba(255,140,0,0.4);
+}
+.review-btn-next:active { transform: scale(0.96); }
+.review-btn-next:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Review "done" state */
+.review-done {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(0.9rem, 2vw, 1.3rem);
+  color: var(--gold);
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 16px rgba(255,215,0,0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  text-align: center;
+  line-height: 1.7;
+}
+.review-done.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+</style>
+</head>
+<body>
+
+<div id="stars-bg"></div>
+
+<header class="site-header">
+  <p class="header-sub">✦ &nbsp; Nirankari Youth Night (Vancouver) &nbsp; ✦</p>
+  <h1 class="header-main">Nirankari Tambola</h1>
+  <div class="header-deco">
+    <div class="header-deco-line"></div>
+    <span class="header-deco-star">★</span>
+    <div class="header-deco-line"></div>
+  </div>
+</header>
+
+<div id="app">
+
+  <!-- VIEW 1: WHEEL -->
+  <div id="view-wheel">
+    <div class="wheel-outer">
+      <canvas id="wheelCanvas"></canvas>
+      <div class="wheel-pointer"></div>
+    </div>
+    <p class="remaining-label" id="remainingLabel">24 Numbers Remaining</p>
+    <button class="spin-btn" id="spinBtn">S &nbsp; P &nbsp; I &nbsp; N</button>
+    <div class="all-done-msg" id="allDoneMsg">
+      🎉 All Numbers Drawn! 🎉<br>
+      <span style="font-size:0.55em; opacity:0.7; display:block; margin-bottom:20px;">All 24 questions have been played.</span>
+      <button class="ctrl-btn accent" id="reviewBtn" style="font-size:clamp(1.1rem,2.5vw,1.6rem); margin-top:4px;">
+        📖 &nbsp; Review All Questions
+      </button>
+    </div>
+  </div>
+
+  <!-- VIEW 2: QUESTION -->
+  <div id="view-question" class="focus-number">
+    <p class="q-label">Number Drawn</p>
+    <div class="q-number" id="qNumber">—</div>
+
+    <div id="questionRevealWrapper">
+      <div id="questionRevealArea">
+        <div class="gold-divider"></div>
+        <p class="q-text" id="qText">—</p>
+
+        <div class="timer-wrap">
+          <p class="timer-sub">Countdown</p>
+          <div class="timer-display" id="timerDisplay">30</div>
+        </div>
+
+        <div class="gold-divider"></div>
+        <p class="answer-text hidden" id="answerText">—</p>
+
+        <div class="controls">
+          <button class="ctrl-btn accent" id="startTimerBtn">▶ &nbsp;Start Timer</button>
+          <button class="ctrl-btn" id="revealBtn">Reveal Answer</button>
+          <button class="ctrl-btn" id="backBtn">← &nbsp;Back to Wheel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 3: REVIEW -->
+  <div id="view-review">
+    <p class="review-label">✦ &nbsp; Question Review &nbsp; ✦</p>
+    <p class="review-counter" id="reviewCounter">1 / 24</p>
+    <div class="review-number" id="reviewNumber">1</div>
+    <div class="review-card" id="reviewCard">
+      <p class="review-q" id="reviewQ">—</p>
+      <div class="review-divider"></div>
+      <p class="review-a-label">Answer</p>
+      <p class="review-a" id="reviewA">—</p>
+    </div>
+    <div class="review-controls">
+      <button class="ctrl-btn" id="reviewBackBtn">← &nbsp;Back to Wheel</button>
+      <button class="review-btn-next" id="reviewNextBtn">Next &nbsp;→</button>
+    </div>
+    <p class="review-done" id="reviewDone">
+      ✦ &nbsp; All Questions Reviewed &nbsp; ✦<br>
+      <span style="font-size:0.65em; opacity:0.7;">Refresh the page to play again.</span>
+    </p>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   SETTINGS
+═══════════════════════════════════════════════════ */
+const REVEAL_DELAY = 3500;
+
+/* ═══════════════════════════════════════════════════
+   STARS
+═══════════════════════════════════════════════════ */
+(function () {
+  const bg = document.getElementById('stars-bg');
+  for (let i = 0; i < 220; i++) {
+    const s  = document.createElement('div');
+    s.className = 'star';
+    const sz  = (Math.random() * 2.4 + 0.4).toFixed(1);
+    s.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      top:${(Math.random()*100).toFixed(2)}%;
+      left:${(Math.random()*100).toFixed(2)}%;
+      --dur:${(3+Math.random()*6).toFixed(1)}s;
+      --delay:${(Math.random()*8).toFixed(1)}s;
+      --lo:${(Math.random()*0.15+0.04).toFixed(2)};
+      --hi:${(Math.random()*0.55+0.4).toFixed(2)};
+    `;
+    bg.appendChild(s);
+  }
+})();
+
+/* ═══════════════════════════════════════════════════
+   TAMBOLA DATA
+═══════════════════════════════════════════════════ */
+const TAMBOLA = [
+  { n:  1, q: "What was the theme of the 76th Nirankari Sant Samagam?",                              a: "Sukoon (Peace)" },
+  { n:  2, q: "In which year was the Sant Nirankari Mission officially founded?",                    a: "1929" },
+  { n:  3, q: "What specific name is given to the Samagam held on 15th August every year?",          a: "Mukti Parv" },
+  { n:  4, q: "Which Friday of every month is the Vancouver EMS held?",                              a: "2nd Friday" },
+  { n:  5, q: "Name the first Holy Scripture of the Sant Nirankari Mission.",                        a: "Sampuran Avtar Bani" },
+  { n:  6, q: "In which year will the Sant Nirankari Mission complete its 100 years?",               a: "2029" },
+  { n:  7, q: "In which year was the last Nirankari Youth Samagam (NYS) held in Canada?",            a: "2023" },
+  { n:  8, q: "Who is the Sewadal Training In-Charge for Western Canada? (Hint: Member of Vancouver Sangat)", a: "Rev. Madan Lal Chawla Ji" },
+  { n:  9, q: "Name the founder of the Sant Nirankari Mandal.",                                      a: "Baba Avtar Singh Ji" },
+  { n: 10, q: "What was the nickname of Baba Hardev Singh Ji during his childhood?",                 a: "Bhola / Bhola Seth" },
+  { n: 11, q: "What is the other name of the Sant Nirankari Mission in the English language?",       a: "Universal Brotherhood" },
+  { n: 12, q: "Complete the theme of Project Amrit — 'Swachh Jal, Swachh ___'.",                   a: "Maan (Mind)" },
+  { n: 13, q: "In which city was the first Nirankari Youth Samagam (NYS) held?",                    a: "New Delhi / Delhi" },
+  { n: 14, q: "What are the three S's of the Nirankari Mission?",                                    a: "Sewa, Simran & Satsang" },
+  { n: 15, q: "What is the meaning of the word 'Nirankar'?",                                        a: "Formless God" },
+  { n: 16, q: "In which month and year did Satguru Mata Ji last visit Vancouver?",                   a: "August 2023" },
+  { n: 17, q: "What are the dates of the upcoming Los Angeles (LA) Samagam?",                       a: "June 27th & 28th" },
+  { n: 18, q: "Which country hosted the first-ever international Nirankari Samagam outside India?", a: "United Kingdom (England / Britain)" },
+  { n: 19, q: "Who is known as 'Strength Personified' in the Nirankari Mission?",                   a: "Nirankari Mata Savinder Hardev Ji" },
+  { n: 20, q: "Who is the author of the famous book 'Andhkar Se Prakash Ki Or'?",                   a: "J. R. D. Satyarthi Ji (Shastri Ji)" },
+  { n: 21, q: "Who started Blood Donation Camps in the Nirankari Mission?",                          a: "Satguru Baba Hardev Singh Ji Maharaj" },
+  { n: 22, q: "Which Pran states there shall be no discrimination based on diet or dress?",          a: "Pran No. 3" },
+  { n: 23, q: "When was Satguru Mata Sudiksha Ji born?",                                             a: "13th March 1985" },
+  { n: 24, q: "Complete the phrase: '___ Sewa, Narayan (God) Pooja'.",                              a: "Nar / Man / Human" },
+];
+
+/* ═══════════════════════════════════════════════════
+   STATE & AUDIO
+═══════════════════════════════════════════════════ */
+let remaining      = TAMBOLA.map(t => t.n);
+let currentNumber  = null;
+let totalRotation  = 0;
+let isSpinning     = false;
+let timerInterval  = null;
+let timerSeconds   = 30;
+let timerRunning   = false;   // NEW: track running/paused state
+let revealTimeout  = null;
+
+const spinSound     = new Audio('freesound_community-wheel-spin-click-slow-down-101152.mp3');
+const tickSound     = new Audio('voicebosch-ticking-clock-182894.mp3');
+const buzzerSound   = new Audio('eritnhut1992-buzzer-or-wrong-answer-20582.mp3');
+const questionSound = new Audio('kbc-question.mp3');
+
+function stopTickSound() {
+  tickSound.pause();
+  tickSound.currentTime = 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   WHEEL
+═══════════════════════════════════════════════════ */
+const wheelCanvas = document.getElementById('wheelCanvas');
+const ctx         = wheelCanvas.getContext('2d');
+
+function wheelSize() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 170;
+  return Math.round(Math.min(vw * 0.86, 520, vh - headerH - 180));
+}
+
+const SEG_COLOURS = [
+  ['#FFD700','#080820'], ['#0D0B3A','#FFD700'],
+  ['#FF8C00','#080820'], ['#0A1850','#FFF176'],
+  ['#DAA520','#080820'], ['#160C50','#FFC200'],
+];
+
+function lighten(hex, amt) {
+  const n = parseInt(hex.replace('#',''), 16);
+  return `rgb(${Math.min(255,(n>>16)+amt)},${Math.min(255,((n>>8)&0xFF)+amt)},${Math.min(255,(n&0xFF)+amt)})`;
+}
+
+function drawWheel() {
+  const SZ = wheelCanvas.width, CX = SZ/2, CY = SZ/2, R = CX - 8;
+  ctx.clearRect(0, 0, SZ, SZ);
+  const nums = remaining, n = nums.length;
+  if (n === 0) return;
+  const segRad = (2*Math.PI)/n;
+  for (let i = 0; i < n; i++) {
+    const startA = i*segRad - Math.PI/2, endA = startA + segRad, midA = (startA+endA)/2;
+    const [fill, textCol] = SEG_COLOURS[i % SEG_COLOURS.length];
+    const gx = CX+R*0.45*Math.cos(midA), gy = CY+R*0.45*Math.sin(midA);
+    const grad = ctx.createRadialGradient(gx,gy,0,CX,CY,R);
+    grad.addColorStop(0, lighten(fill,40)); grad.addColorStop(1, fill);
+    ctx.beginPath(); ctx.moveTo(CX,CY); ctx.arc(CX,CY,R,startA,endA); ctx.closePath();
+    ctx.fillStyle = grad; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)'; ctx.lineWidth = 1.5; ctx.stroke();
+    const tr = R*0.68, tx = CX+tr*Math.cos(midA), ty = CY+tr*Math.sin(midA);
+    const fs = n<=8?30:n<=12?26:n<=18?20:16;
+    ctx.save(); ctx.translate(tx,ty); ctx.rotate(midA+Math.PI/2);
+    ctx.font = `bold ${fs}px 'Bebas Neue', sans-serif`;
+    ctx.fillStyle = textCol; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 5;
+    ctx.fillText(nums[i], 0, 0); ctx.restore();
+  }
+  const hubGrad = ctx.createRadialGradient(CX,CY,0,CX,CY,32);
+  hubGrad.addColorStop(0,'#FFF9C4'); hubGrad.addColorStop(0.5,'#FFD700'); hubGrad.addColorStop(1,'#FF8C00');
+  ctx.beginPath(); ctx.arc(CX,CY,30,0,2*Math.PI); ctx.fillStyle = hubGrad; ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 2.5; ctx.stroke();
+  ctx.beginPath(); ctx.arc(CX,CY,10,0,2*Math.PI); ctx.fillStyle = '#05051A'; ctx.fill();
+  const sheen = ctx.createRadialGradient(CX-R*0.25,CY-R*0.25,0,CX,CY,R);
+  sheen.addColorStop(0,'rgba(255,255,255,0.18)'); sheen.addColorStop(0.45,'rgba(255,255,255,0.05)'); sheen.addColorStop(1,'rgba(0,0,0,0.28)');
+  ctx.beginPath(); ctx.arc(CX,CY,R,0,2*Math.PI); ctx.fillStyle = sheen; ctx.fill();
+  ctx.beginPath(); ctx.arc(CX,CY,R,0,2*Math.PI); ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 5.5; ctx.stroke();
+  ctx.beginPath(); ctx.arc(CX,CY,R-8,0,2*Math.PI); ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 2; ctx.stroke();
+}
+
+function initWheelSize() {
+  const sz = wheelSize();
+  wheelCanvas.width = sz; wheelCanvas.height = sz;
+}
+
+/* ═══════════════════════════════════════════════════
+   SPIN
+═══════════════════════════════════════════════════ */
+const spinBtn      = document.getElementById('spinBtn');
+const remainingLbl = document.getElementById('remainingLabel');
+const allDoneMsg   = document.getElementById('allDoneMsg');
+
+spinBtn.addEventListener('click', () => {
+  if (isSpinning || remaining.length === 0) return;
+  isSpinning = true;
+  spinBtn.disabled = true;
+  spinSound.currentTime = 0; spinSound.play();
+  const idx  = Math.floor(Math.random() * remaining.length);
+  currentNumber = remaining[idx];
+  const n = remaining.length, segDeg = 360/n;
+  let target = (((180 - (idx+0.5)*segDeg) % 360) + 360) % 360;
+  while (target < totalRotation + 360*6) target += 360;
+  totalRotation = target;
+  wheelCanvas.style.transition = 'transform 4.8s cubic-bezier(0.23, 1, 0.32, 1)';
+  wheelCanvas.style.transform  = `rotate(${totalRotation}deg)`;
+  setTimeout(() => { isSpinning = false; showQuestionView(); }, 4900);
+});
+
+/* ═══════════════════════════════════════════════════
+   VIEWS
+═══════════════════════════════════════════════════ */
+const viewWheel    = document.getElementById('view-wheel');
+const viewQuestion = document.getElementById('view-question');
+const viewReview   = document.getElementById('view-review');
+
+function showWheelView() {
+  viewQuestion.style.display = 'none';
+  viewReview.style.display   = 'none';
+  viewWheel.style.display    = 'flex';
+
+  remainingLbl.textContent = remaining.length > 0
+    ? `${remaining.length} Number${remaining.length !== 1 ? 's' : ''} Remaining` : '';
+
+  if (remaining.length === 0) {
+    spinBtn.style.display    = 'none';
+    allDoneMsg.style.display = 'block';
+    remainingLbl.textContent = '';
+  } else {
+    spinBtn.style.display    = '';
+    spinBtn.disabled         = false;
+    allDoneMsg.style.display = 'none';
+  }
+
+  totalRotation = 0;
+  wheelCanvas.style.transition = 'none';
+  wheelCanvas.style.transform  = 'rotate(0deg)';
+  initWheelSize(); drawWheel();
+}
+
+function showQuestionView() {
+  viewWheel.style.display  = 'none';
+  viewReview.style.display = 'none';
+  viewQuestion.style.display = 'flex';
+
+  clearTimeout(revealTimeout);
+  viewQuestion.classList.add('focus-number');
+  questionSound.currentTime = 0; questionSound.play();
+
+  const data = TAMBOLA.find(t => t.n === currentNumber);
+  document.getElementById('qNumber').textContent    = currentNumber;
+  document.getElementById('qText').textContent      = data.q;
+  document.getElementById('answerText').textContent = '✦ ' + data.a + ' ✦';
+  document.getElementById('answerText').classList.add('hidden');
+
+  /* reset timer */
+  resetTimer();
+
+  revealTimeout = setTimeout(() => {
+    if (viewQuestion.style.display === 'flex') {
+      viewQuestion.classList.remove('focus-number');
+    }
+  }, REVEAL_DELAY);
+}
+
+/* ─── RESET TIMER HELPER ─────────────────────────────── */
+function resetTimer() {
+  clearInterval(timerInterval);
+  stopTickSound();
+  timerRunning  = false;
+  timerSeconds  = 30;
+  const td = document.getElementById('timerDisplay');
+  td.textContent = '30';
+  td.classList.remove('urgent');
+  td.style.color = '';
+  td.style.textShadow = '';
+  const stBtn = document.getElementById('startTimerBtn');
+  stBtn.disabled = false;
+  stBtn.textContent = '▶ \u00A0Start Timer';
+  stBtn.classList.remove('paused', 'accent');
+  stBtn.classList.add('accent');
+}
+
+/* ═══════════════════════════════════════════════════
+   TIMER  —  now toggles pause / resume
+═══════════════════════════════════════════════════ */
+document.getElementById('startTimerBtn').addEventListener('click', () => {
+  const stBtn = document.getElementById('startTimerBtn');
+  const td    = document.getElementById('timerDisplay');
+
+  // If timer has finished, do nothing
+  if (timerSeconds <= 0) return;
+
+  if (!timerRunning) {
+    /* ── START / RESUME ── */
+    timerRunning = true;
+    stBtn.textContent = '⏸ \u00A0Pause';
+    stBtn.classList.remove('accent');
+    stBtn.classList.add('paused');
+
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      td.textContent = timerSeconds > 0 ? timerSeconds : '⏰';
+      if (timerSeconds > 0) { tickSound.currentTime = 0; tickSound.play(); }
+      if (timerSeconds <= 5 && timerSeconds > 0) td.classList.add('urgent');
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        stopTickSound();
+        td.classList.remove('urgent');
+        td.style.color = '#FF3333';
+        td.style.textShadow = '0 0 30px rgba(255,50,50,0.95), 0 0 70px rgba(255,50,50,0.5)';
+        buzzerSound.currentTime = 0; buzzerSound.play();
+        stBtn.disabled = true;
+        stBtn.textContent = '⏰ \u00A0Time\'s Up';
+        stBtn.classList.remove('paused');
+      }
+    }, 1000);
+
+  } else {
+    /* ── PAUSE ── */
+    timerRunning = false;
+    clearInterval(timerInterval);
+    stopTickSound();
+    stBtn.textContent = '▶ \u00A0Resume';
+    stBtn.classList.remove('paused');
+    stBtn.classList.add('accent');
+  }
+});
+
+/* ═══════════════════════════════════════════════════
+   REVEAL ANSWER
+═══════════════════════════════════════════════════ */
+document.getElementById('revealBtn').addEventListener('click', () => {
+  document.getElementById('answerText').classList.remove('hidden');
+  clearInterval(timerInterval);
+  stopTickSound();
+  timerRunning = false;
+});
+
+/* ═══════════════════════════════════════════════════
+   BACK TO WHEEL (from question)
+═══════════════════════════════════════════════════ */
+document.getElementById('backBtn').addEventListener('click', () => {
+  clearTimeout(revealTimeout);
+  clearInterval(timerInterval);
+  stopTickSound();
+  timerRunning = false;
+  remaining = remaining.filter(n => n !== currentNumber);
+  currentNumber = null;
+  showWheelView();
+});
+
+/* ═══════════════════════════════════════════════════
+   REVIEW MODE
+═══════════════════════════════════════════════════ */
+let reviewIndex = 0;
+
+document.getElementById('reviewBtn').addEventListener('click', () => {
+  reviewIndex = 0;
+  loadReviewCard(reviewIndex, false);
+  viewWheel.style.display    = 'none';
+  viewQuestion.style.display = 'none';
+  viewReview.style.display   = 'flex';
+});
+
+document.getElementById('reviewBackBtn').addEventListener('click', () => {
+  viewReview.style.display = 'none';
+  showWheelView();
+});
+
+document.getElementById('reviewNextBtn').addEventListener('click', () => {
+  if (reviewIndex >= TAMBOLA.length - 1) return;
+  const card = document.getElementById('reviewCard');
+  card.classList.add('transitioning');
+  setTimeout(() => {
+    reviewIndex++;
+    loadReviewCard(reviewIndex, true);
+  }, 350);
+});
+
+function loadReviewCard(idx, animate) {
+  const card    = document.getElementById('reviewCard');
+  const data    = TAMBOLA[idx];
+  const total   = TAMBOLA.length;
+  const nextBtn = document.getElementById('reviewNextBtn');
+  const doneEl  = document.getElementById('reviewDone');
+
+  document.getElementById('reviewCounter').textContent = `${idx + 1} / ${total}`;
+  document.getElementById('reviewNumber').textContent  = data.n;
+  document.getElementById('reviewQ').textContent       = data.q;
+  document.getElementById('reviewA').textContent       = '✦ ' + data.a + ' ✦';
+
+  if (idx >= total - 1) {
+    nextBtn.disabled = true;
+    doneEl.classList.add('visible');
+  } else {
+    nextBtn.disabled = false;
+    doneEl.classList.remove('visible');
+  }
+
+  if (animate) {
+    card.classList.remove('transitioning');
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT & RESIZE
+═══════════════════════════════════════════════════ */
+initWheelSize(); drawWheel();
+
+window.addEventListener('resize', () => {
+  if (viewWheel.style.display !== 'none' && !isSpinning) {
+    initWheelSize(); drawWheel();
+    wheelCanvas.style.transition = 'none';
+    wheelCanvas.style.transform  = `rotate(${totalRotation}deg)`;
+  }
+});
+</script>
+</body>
+</html>
